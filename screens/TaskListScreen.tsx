@@ -3,7 +3,6 @@ import {
   View,
   Text,
   FlatList,
-  StyleSheet,
   TouchableOpacity,
   RefreshControl,
   TextInput,
@@ -14,8 +13,8 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootNavigationTypes, Task } from "../types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FeatherIcons from "react-native-vector-icons/Feather";
+import { taskListStyles as styles } from "../styles/task-list.style";
 const TASKS_KEY = "TASKS_LIST";
-
 type NavigationProp = NativeStackNavigationProp<
   RootNavigationTypes,
   "taskList"
@@ -94,65 +93,3 @@ const TaskListScreen: React.FC = () => {
 };
 
 export default TaskListScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-  },
-  searchContainer: {
-    flexDirection: "row",
-    gap: 16,
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  searchInput: {
-    borderWidth: 1,
-    flex: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 12,
-  },
-  featherIcon: {
-    padding: 12,
-    borderRadius: 8,
-    backgroundColor: "#f0f0ff",
-  },
-  taskCard: {
-    backgroundColor: "#f9f9f9",
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 12,
-    elevation: 2,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  meta: {
-    fontSize: 14,
-    marginTop: 4,
-  },
-  priority: {
-    fontWeight: "600",
-    marginTop: 4,
-  },
-  priority_Low: {
-    color: "green",
-  },
-  priority_Medium: {
-    color: "orange",
-  },
-  priority_High: {
-    color: "red",
-  },
-  description: {
-    marginTop: 8,
-    fontStyle: "italic",
-    color: "#555",
-  },
-  empty: {
-    marginTop: 40,
-    textAlign: "center",
-    color: "#888",
-  },
-});

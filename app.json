@@ -20,10 +20,16 @@
         "foregroundImage": "./assets/task-management-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.abeebdon.taskmanagement"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "74a125e0-6f60-40b6-b5fc-e9b743f247b6"
+      }
     }
   }
 }
