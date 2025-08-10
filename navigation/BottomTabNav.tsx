@@ -13,6 +13,12 @@ const BottomNNavigation = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
+        tabBarActiveTintColor: "blue",
+        tabBarStyle: {
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        },
       }}
     >
       <Tab.Screen
@@ -29,13 +35,16 @@ const BottomNNavigation = () => {
         name="Create"
         component={CreateTaskScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="plus" color={color} size={size} />
+          tabBarIcon: ({ color }) => (
+            <Feather name="plus-circle" color={color} size={28} />
           ),
           tabBarLabel: () => null,
-          tabBarStyle: {
-            justifyContent: "center",
-            alignItems: "center",
+
+          tabBarIconStyle: {
+            marginBottom: 0,
+            position: "absolute",
+            bottom: 10,
+            marginVertical: "auto",
           },
         }}
       />

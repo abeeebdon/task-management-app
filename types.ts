@@ -3,6 +3,8 @@ export type RootNavigationTypes = {
   Home: undefined;
   auth: undefined;
   settings: undefined;
+  Create: undefined;
+  Tasks: undefined;
   taskList: undefined;
   taskDetails: { task: Task };
   taskEdit: { id: string };

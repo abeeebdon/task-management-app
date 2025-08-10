@@ -1,8 +1,10 @@
 import { StyleSheet } from "react-native";
+import { Colors } from "../components/constants";
 
 export const taskListStyles = StyleSheet.create({
   container: {
     padding: 16,
+    backgroundColor: Colors.background,
   },
   searchContainer: {
     flexDirection: "row",
@@ -28,14 +30,19 @@ export const taskListStyles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 12,
     elevation: 2,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   title: {
     fontSize: 18,
     fontWeight: "bold",
+    color: Colors.primary,
   },
   meta: {
     fontSize: 14,
     marginTop: 4,
+    textTransform: "capitalize",
   },
   priority: {
     fontWeight: "600",
@@ -59,5 +66,27 @@ export const taskListStyles = StyleSheet.create({
     marginTop: 40,
     textAlign: "center",
     color: "#888",
+  },
+  filterContainer: {
+    flexDirection: "row",
+    gap: 10,
+    marginBottom: 16,
+  },
+  filterButton: {
+    padding: 8,
+    paddingHorizontal: 12,
+    borderRadius: 4,
+    backgroundColor: "#f0f0f0",
+    elevation: 1,
+  },
+  taskList: {
+    flex: 1,
+  },
+  addButton: {
+    backgroundColor: Colors.primary,
+    padding: 12,
+    marginVertical: 12,
+    borderRadius: 8,
+    elevation: 2,
   },
 });

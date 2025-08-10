@@ -1,10 +1,20 @@
-import React from "react";
-import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
+import { FC } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootNavigationTypes } from "../types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FeatherIcon from "react-native-vector-icons/Feather";
+import { deleteFunc } from "../components/func";
 
 // Correctly type the route
 type TaskDetailsRouteProp = RouteProp<RootNavigationTypes, "taskDetails">;
@@ -14,30 +24,55 @@ type NavigationProp = NativeStackNavigationProp<
   RootNavigationTypes,
   "taskDetails"
 >;
-
-const TaskDetailsScreen: React.FC = () => {
+const getStatusStyle = (status: string) => {
+  switch (status.toLowerCase()) {
+    case "in progress":
+      return { backgroundColor: "orange" };
+    case "pending":
+      return { backgroundColor: "goldenrod" };
+    case "completed":
+      return { backgroundColor: "green" };
+    case "archived":
+      return { backgroundColor: "gray" };
+    default:
+      return { backgroundColor: "#666" };
+  }
+};
+const TaskDetailsScreen: FC = () => {
   const route = useRoute<TaskDetailsRouteProp>();
   const navigation = useNavigation<NavigationProp>();
 
-  const { title, completionDate, description, status, category, priority } =
+  const { title, completionDate, description, status, category, priority, id } =
     route.params.task;
 
+  const handleEdit = () => {};
+  const TASKS_KEY = "TASKS_LIST";
+
+  const handleDelete = async () => {
+    const status = await deleteFunc(id);
+    if (status == "deleted") {
+      Alert.alert("Success", "Task deleted successfully.");
+      navigation.goBack();
+    }
+  };
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.content}
       >
-        <View style={styles.titleContainer}>
+        <View style={[styles.titleContainer, getStatusStyle(status)]}>
           <Pressable onPress={() => navigation.goBack()} hitSlop={8}>
-            <FeatherIcon name="arrow-left" size={24} color="black" />
+            <FeatherIcon name="arrow-left" size={24} color="white" />
           </Pressable>
           <Text style={styles.title}>{title}</Text>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.label}>Completion Date:</Text>
-          <Text style={styles.value}>{completionDate}</Text>
+          <Text style={styles.value}>
+            {new Date(completionDate).toDateString()}
+          </Text>
         </View>
 
         <View style={styles.section}>
@@ -59,6 +94,20 @@ const TaskDetailsScreen: React.FC = () => {
           <Text style={styles.label}>Priority:</Text>
           <Text style={styles.value}>{priority}</Text>
         </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("taskEdit", { id: id })}
+            style={[styles.actionBtn, { backgroundColor: "green" }]}
+          >
+            <Text style={styles.btnText}>Edit</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleDelete}
+            style={[styles.actionBtn, { backgroundColor: "darkred" }]}
+          >
+            <Text style={styles.btnText}>Delete</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -72,21 +121,26 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9f9f9",
   },
   content: {
-    padding: 16,
+    // padding: 16,
   },
   titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    backgroundColor: "blue",
+    padding: 16,
+    // height: 100,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
     marginBottom: 16,
     gap: 24,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    flexShrink: 1,
+    textAlign: "center",
+    color: "white",
   },
   section: {
     marginBottom: 12,
+    padding: 10,
   },
   label: {
     fontSize: 14,
@@ -96,5 +150,23 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 16,
     color: "#222",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    padding: 16,
+  },
+  actionBtn: {
+    backgroundColor: "#dad1d1ff",
+    elevation: 2,
+    width: "40%",
+    padding: 12,
+    borderRadius: 8,
+    marginHorizontal: 8,
+  },
+  btnText: {
+    fontSize: 16,
+    textAlign: "center",
+    color: "white",
   },
 });

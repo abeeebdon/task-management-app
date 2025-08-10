@@ -1,10 +1,15 @@
 import { StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const SettingsScreen = () => {
   return (
-    <View>
-      <Text>SettingsScreen</Text>
-    </View>
+    <SafeAreaView
+      style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+    >
+      <View>
+        <Text>Coming soon </Text>
+      </View>
+    </SafeAreaView>
   );
 };
 

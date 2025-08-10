@@ -1,10 +1,18 @@
 import React, { useState, useCallback } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Feather from "react-native-vector-icons/Feather";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useFocusEffect } from "@react-navigation/native";
-import { Task } from "../types";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { RootNavigationTypes, Task } from "../types";
+import { taskListStyles } from "../styles/task-list.style";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 const getStatusStyle = (status: string) => {
   switch (status.toLowerCase()) {
     case "in progress":
@@ -47,7 +55,14 @@ const getIcon = (category: string) => {
   }
   return iconName;
 };
+
+type NavigationProp = NativeStackNavigationProp<
+  RootNavigationTypes,
+  "taskList"
+>;
 const HomeScreen = () => {
+  const navigation = useNavigation<NavigationProp>();
+
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -77,8 +92,10 @@ const HomeScreen = () => {
       {/* Header */}
       <View style={styles.headerContainer}>
         <View>
-          <Text style={styles.welcomeText}>Welcome</Text>
-          <Text style={styles.username}>Abeebdon!</Text>
+          <Text style={styles.welcomeText}>Welcome !!!</Text>
+          <Text style={styles.username}>
+            Organise your tasks like and get them done
+          </Text>
         </View>
         <View style={styles.headerIcon}>
           <Feather name="user" size={24} color="blue" />
@@ -97,10 +114,9 @@ const HomeScreen = () => {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.container}
             contentContainerStyle={styles.contentContainer}
           >
-            {tasks.slice(0, 5).map((item) => (
+            {tasks.slice(0, 4).map((item) => (
               <View key={item.id} style={styles.card}>
                 <Feather
                   name={getIcon(item.category)}
@@ -129,21 +145,33 @@ const HomeScreen = () => {
         ) : (
           <ScrollView
             showsHorizontalScrollIndicator={false}
-            style={styles.container}
+            contentContainerStyle={styles.taskContainer}
           >
             {tasks
               .filter((t) => t.status === "pending")
               .map((item) => (
-                <View key={item.id} style={styles.card}>
+                <TouchableOpacity
+                  style={styles.cardP}
+                  key={item.id}
+                  onPress={() => navigation.navigate("Tasks")}
+                >
                   <Feather
                     name={getIcon(item.category)}
                     size={28}
                     color="blue"
                     style={styles.cardIcon}
                   />
-                  <Text style={styles.cardName}>{item.title}</Text>
-                  <Text style={styles.cardCategory}>{item.category}</Text>
-                </View>
+
+                  <View>
+                    <Text style={taskListStyles.title}>{item.title}</Text>
+                    <Text style={taskListStyles.meta}>
+                      Due: {new Date(item.completionDate).toDateString()}
+                    </Text>
+                    <Text style={taskListStyles.meta}>
+                      Status: {item.status}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
               ))}
           </ScrollView>
         )}
@@ -164,14 +192,14 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     fontSize: 16,
-    color: "#555",
+    color: "#777070ff",
   },
   username: {
-    fontSize: 20,
-    fontWeight: "bold",
+    fontSize: 14,
+    fontWeight: "medium",
   },
   headerIcon: {
-    padding: 5,
+    padding: 6,
     borderWidth: 2,
     width: 40,
     height: 40,
@@ -189,9 +217,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
   },
-  container: {
-    paddingHorizontal: 4,
-  },
+
   contentContainer: {
     paddingRight: 16,
   },
@@ -225,5 +251,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#666",
     textAlign: "center",
+  },
+  taskContainer: {
+    gap: 10,
+  },
+  cardP: {
+    flexDirection: "row",
+    gap: 8,
+    alignItems: "center",
+    backgroundColor: "white",
+    elevation: 2,
+    padding: 10,
+    borderRadius: 10,
   },
 });

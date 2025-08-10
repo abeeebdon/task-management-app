@@ -3,19 +3,24 @@ import {
   View,
   Text,
   TextInput,
-  Button,
   Platform,
   ScrollView,
-  StyleSheet,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
   TouchableOpacity,
+  Pressable,
 } from "react-native";
+import Entypo from "react-native-vector-icons/Entypo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Picker } from "@react-native-picker/picker";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { createTaskStyles as styles } from "../styles/create-task.style";
+import { categories } from "../components/data";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootNavigationTypes } from "../types";
+import { Colors } from "../components/constants";
 
 const TASKS_KEY = "TASKS_LIST";
 
@@ -26,17 +31,15 @@ type Task = {
   completionDate: string;
   status: string;
   category: string;
-  priority: "Low" | "Medium" | "High";
 };
-
 const CreateTaskScreen: FC = () => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootNavigationTypes>>();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [completionDate, setCompletionDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [status, setStatus] = useState("Todo");
-  const [category, setCategory] = useState("Personal");
-  const [priority, setPriority] = useState<"Low" | "Medium" | "High">("Medium");
+  const [category, setCategory] = useState("");
 
   const handleDateChange = (_: any, selectedDate?: Date) => {
     setShowDatePicker(false);
@@ -44,14 +47,17 @@ const CreateTaskScreen: FC = () => {
   };
 
   const saveTask = async () => {
+    if (!title || !description || !category) {
+      alert("Please fill in all fields.");
+      return;
+    }
     const newTask: Task = {
       id: Date.now().toString(),
       title,
       description,
       completionDate: completionDate.toISOString(),
-      status,
+      status: "pending",
       category,
-      priority,
     };
 
     try {
@@ -62,10 +68,9 @@ const CreateTaskScreen: FC = () => {
       alert("Task saved!");
       setTitle("");
       setDescription("");
-      setStatus("Todo");
       setCategory("Personal");
-      setPriority("Medium");
       setCompletionDate(new Date());
+      navigation.navigate("Tasks");
     } catch (error) {
       console.log("Error saving task:", error);
       alert("Failed to save task.");
@@ -79,77 +84,85 @@ const CreateTaskScreen: FC = () => {
         style={{ flex: 1 }}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View>
+          <View style={{ flex: 1, backgroundColor: Colors.background }}>
             <View style={styles.headContainer}>
-              <Text style={styles.title}>Create A new Task</Text>
-              <Text style={[styles.label, { color: "#fff" }]}>Title</Text>
-              <TextInput
-                style={[
-                  styles.input,
-                  { backgroundColor: "#fff", color: "blue" },
-                ]}
-                placeholder="Task title"
-                value={title}
-                onChangeText={setTitle}
-              />
+              <Text style={styles.title}>Create A New Task</Text>
+
+              {/* input for title  */}
+              <View style={{ marginTop: 16 }}>
+                <Text style={[styles.label, { color: "#fff" }]}>Title</Text>
+                <TextInput
+                  style={[
+                    styles.input,
+                    { backgroundColor: "#fff", color: "blue" },
+                  ]}
+                  placeholder="Task title"
+                  value={title}
+                  onChangeText={setTitle}
+                />
+              </View>
             </View>
             <ScrollView contentContainerStyle={styles.container}>
-              <Text style={styles.label}>Description</Text>
-              <TextInput
-                style={[styles.input, styles.textArea]}
-                placeholder="Description"
-                value={description}
-                onChangeText={setDescription}
-                multiline
-                numberOfLines={4}
-              />
-              <Text style={styles.label}>Completion Date</Text>
-              <Button
-                title={completionDate.toDateString()}
-                onPress={() => setShowDatePicker(true)}
-              />
-              {showDatePicker && (
-                <DateTimePicker
-                  value={completionDate}
-                  mode="date"
-                  display={Platform.OS === "ios" ? "inline" : "default"}
-                  onChange={handleDateChange}
+              <View>
+                <Text style={styles.label}>Description</Text>
+                <TextInput
+                  style={[styles.input, styles.textArea]}
+                  placeholder="Description"
+                  value={description}
+                  onChangeText={setDescription}
+                  multiline
+                  numberOfLines={4}
                 />
-              )}
-              <Text style={styles.label}>Status</Text>
-              <Picker
-                selectedValue={status}
-                onValueChange={(value) => setStatus(value)}
-              >
-                <Picker.Item label="Todo" value="Todo" />
-                <Picker.Item label="In Progress" value="In Progress" />
-                <Picker.Item label="Done" value="Done" />
-              </Picker>
 
-              <Text style={styles.label}>Category</Text>
-              <Picker
-                selectedValue={category}
-                onValueChange={(value) => setCategory(value)}
-              >
-                <Picker.Item label="Personal" value="Personal" />
-                <Picker.Item label="Work" value="Work" />
-                <Picker.Item label="Errands" value="Errands" />
-              </Picker>
+                <Text style={styles.label}>Category</Text>
+                <View style={styles.categoriesContainer}>
+                  {categories.map((level) => (
+                    <Pressable
+                      key={level}
+                      onPress={() => setCategory(level)}
+                      style={[styles.categoriesBtn]}
+                    >
+                      <Text
+                        style={{
+                          color: category === level ? "#007BFF" : "white",
+                        }}
+                      >
+                        {level}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
 
-              <Text style={styles.label}>Priority</Text>
-              <View style={styles.priorityContainer}>
-                {(["Low", "Medium", "High"] as const).map((level) => (
-                  <Button
-                    key={level}
-                    title={level}
-                    color={priority === level ? "#007BFF" : undefined}
-                    onPress={() => setPriority(level)}
+                <Text style={styles.label}>Completion Date :</Text>
+                <Pressable
+                  style={styles.datePicker}
+                  onPress={() => setShowDatePicker(true)}
+                >
+                  <Text
+                    style={{
+                      color: "white",
+                      textAlign: "center",
+                      fontSize: 16,
+                    }}
+                  >
+                    {completionDate.toDateString()}
+                  </Text>
+                  <Entypo name="chevron-small-down" color="white" />
+                </Pressable>
+                {showDatePicker && (
+                  <DateTimePicker
+                    value={completionDate}
+                    mode="date"
+                    display={Platform.OS === "ios" ? "inline" : "default"}
+                    onChange={handleDateChange}
                   />
-                ))}
+                )}
               </View>
 
-              <TouchableOpacity style={styles.submitButton}>
-                <Button title="Save Task" onPress={saveTask} />
+              <TouchableOpacity onPress={saveTask} style={styles.submitButton}>
+                <Text style={{ color: "white", textAlign: "center" }}>
+                  Save Task
+                </Text>
               </TouchableOpacity>
             </ScrollView>
           </View>
@@ -160,50 +173,3 @@ const CreateTaskScreen: FC = () => {
 };
 
 export default CreateTaskScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    paddingBottom: 32,
-    backgroundColor: "#fff",
-  },
-  headContainer: {
-    borderBottomRightRadius: 20,
-    borderBottomLeftRadius: 20,
-    padding: 16,
-    paddingBottom: 40,
-    backgroundColor: "blue",
-  },
-  title: {
-    textAlign: "center",
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#fff",
-  },
-
-  label: {
-    fontWeight: "600",
-    fontSize: 16,
-    marginTop: 12,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "blue",
-    padding: 10,
-    borderRadius: 6,
-    marginTop: 6,
-  },
-  textArea: {
-    height: 100,
-    textAlignVertical: "top",
-  },
-  priorityContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 6,
-  },
-  submitButton: {
-    marginTop: 24,
-    backgroundColor: "blue",
-  },
-});
