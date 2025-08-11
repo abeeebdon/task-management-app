@@ -18,7 +18,7 @@ import { AuthContext } from "../context/AuthContext";
 import { homeStyles as styles } from "../styles/home.styles";
 import { Colors } from "../components/constants";
 import { formatMonthYear } from "../components/func";
-
+// Helper function to determine status color
 const getStatusStyle = (status: string) => {
   switch (status.toLowerCase()) {
     case "pending":
