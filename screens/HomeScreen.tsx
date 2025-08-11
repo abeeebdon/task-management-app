@@ -72,7 +72,6 @@ const HomeScreen = () => {
       loadTasks();
     }, [])
   );
-  console.log(tasks);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f2f2f2" }}>
       <ScrollView

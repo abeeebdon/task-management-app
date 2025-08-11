@@ -79,7 +79,12 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
               onValueChange={(value) => handleChange("category", value)}
             >
               {categories.map((cat, i) => (
-                <Picker.Item key={i} label={cat} value={cat} color="#222" />
+                <Picker.Item
+                  key={i}
+                  label={cat}
+                  value={cat}
+                  color="#4b4848ff"
+                />
               ))}
             </Picker>
           </View>
@@ -114,8 +119,12 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
               selectedValue={form.status}
               onValueChange={(value) => handleChange("status", value)}
             >
-              <Picker.Item label="Pending" value="pending" />
-              <Picker.Item label="Completed" value="completed" />
+              <Picker.Item label="Pending" value="pending" color="#4b4848ff" />
+              <Picker.Item
+                label="Completed"
+                value="completed"
+                color="#4b4848ff"
+              />
             </Picker>
           </View>
 

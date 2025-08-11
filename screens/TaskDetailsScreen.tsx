@@ -89,7 +89,9 @@ const TaskDetailsScreen: FC = () => {
 
         <View style={styles.section}>
           <Text style={styles.label}>Description:</Text>
-          <Text style={styles.value}>{description || "No description"}</Text>
+          <Text style={{ fontSize: 16, color: "#222" }}>
+            {description || "No description"}
+          </Text>
         </View>
 
         <View style={styles.section}>

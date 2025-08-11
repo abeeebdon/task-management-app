@@ -15,7 +15,7 @@ import { settingsStyles as styles } from "../styles/settings.style";
 const USER_STORAGE_KEY = "REGISTERED_USER";
 
 const ProfileScreen = () => {
-  const { user, setUser, logout } = useContext(AuthContext); // ✅ added logout
+  const { user, setUser, logout } = useContext(AuthContext);
   const [isEditing, setIsEditing] = useState(false);
 
   const [fullName, setFullName] = useState(user?.fullName || "");
@@ -31,10 +31,8 @@ const ProfileScreen = () => {
         email,
       };
 
-      // ✅ Update context
       setUser(updatedUser);
 
-      // ✅ Save to AsyncStorage
       await AsyncStorage.setItem(USER_STORAGE_KEY, JSON.stringify(updatedUser));
 
       setIsEditing(false);
@@ -73,25 +71,34 @@ const ProfileScreen = () => {
         <View>
           {isEditing ? (
             <>
-              <TextInput
-                style={styles.input}
-                placeholder="Full Name"
-                value={fullName}
-                onChangeText={setFullName}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Username"
-                value={username}
-                onChangeText={setUsername}
-              />
-              <TextInput
-                style={styles.input}
-                placeholder="Email"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-              />
+              <View style={styles.info}>
+                <Text style={styles.infoText}>Full Name</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Full Name"
+                  value={fullName}
+                  onChangeText={setFullName}
+                />
+              </View>
+              <View style={styles.info}>
+                <Text style={styles.infoText}>Username</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Username"
+                  value={username}
+                  onChangeText={setUsername}
+                />
+              </View>
+              <View style={styles.info}>
+                <Text style={styles.infoText}>Username</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Email"
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                />
+              </View>
             </>
           ) : (
             <>

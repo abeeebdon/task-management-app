@@ -35,6 +35,7 @@ export const taskDetailsStyles = StyleSheet.create({
   value: {
     fontSize: 16,
     color: "#222",
+    textTransform: "capitalize",
   },
   buttonContainer: {
     flexDirection: "row",
