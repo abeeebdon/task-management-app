@@ -18,63 +18,52 @@ import { AuthContext } from "../context/AuthContext";
 import { homeStyles as styles } from "../styles/home.styles";
 import { Colors } from "../components/constants";
 import { formatMonthYear } from "../components/func";
+
 const getStatusStyle = (status: string) => {
   switch (status.toLowerCase()) {
     case "pending":
       return { color: "goldenrod" };
     case "completed":
       return { color: "green" };
-
     default:
       return { color: "#666" };
   }
 };
-const getIcon = (category: string) => {
-  let iconName: string;
 
+const getIcon = (category: string) => {
   switch (category.toLowerCase()) {
     case "work":
-      iconName = "briefcase";
-      break;
+      return "briefcase";
     case "personal":
-      iconName = "user";
-      break;
+      return "user";
     case "shopping":
-      iconName = "shopping-cart";
-      break;
+      return "shopping-cart";
     case "health":
-      iconName = "heart";
-      break;
+      return "heart";
     case "finance":
-      iconName = "dollar-sign";
-      break;
+      return "dollar-sign";
     case "study":
-      iconName = "book";
-      break;
+      return "book";
     default:
-      iconName = "tag";
-      break;
+      return "tag";
   }
-  return iconName;
 };
 
 type NavigationProp = NativeStackNavigationProp<RootNavigationTypes, "Home">;
+
 const HomeScreen = () => {
   const navigation = useNavigation<NavigationProp>();
   const { user } = useContext(AuthContext);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+
   useFocusEffect(
     useCallback(() => {
       const loadTasks = async () => {
         setLoading(true);
         try {
           const storedTasks = await AsyncStorage.getItem("TASKS_LIST");
-          if (storedTasks) {
-            setTasks(JSON.parse(storedTasks));
-          } else {
-            setTasks([]);
-          }
+          setTasks(storedTasks ? JSON.parse(storedTasks) : []);
         } catch (error) {
           console.error("Error loading tasks:", error);
         }
@@ -86,105 +75,108 @@ const HomeScreen = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f2f2f2" }}>
-      {/* Header */}
-      <View style={styles.headerContainer}>
-        <View>
-          <Text style={styles.welcomeText}>Welcome {user.username} !!!</Text>
-          <Text style={styles.username}>
-            Organise your tasks and get them done
-          </Text>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 20 }}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={styles.headerContainer}>
+          <View>
+            <Text style={styles.welcomeText}>Welcome {user.username} !!!</Text>
+            <Text style={styles.username}>
+              Organise your tasks and get them done
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={styles.headerIcon}
+            onPress={() => navigation.navigate("Settings")}
+          >
+            <Image
+              source={require("../assets/user_icon.png")}
+              style={styles.image}
+            />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={styles.headerIcon}
-          onPress={() => navigation.navigate("Settings")}
-        >
-          <Image
-            source={require("../assets/user_icon.png")}
-            style={styles.image}
-          />
-        </TouchableOpacity>
-      </View>
 
-      {/* Recent Tasks */}
-      <View style={styles.recentTasksContainer}>
-        {/* <Text style={styles.sectionTitle}>Recent Tasks</Text> */}
+        {/* Recent Tasks */}
+        <View style={styles.recentTasksContainer}>
+          {loading ? (
+            <Text>Loading...</Text>
+          ) : tasks.length === 0 ? (
+            <Text style={{ color: "#666" }}>You have no task yet</Text>
+          ) : (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.contentContainer}
+            >
+              {tasks.slice(0, 4).map((item) => (
+                <View key={item.id} style={styles.card}>
+                  <Text style={{ color: "white", textAlign: "right" }}>
+                    {formatMonthYear(new Date(item.completionDate))}
+                  </Text>
+                  <View
+                    style={{
+                      marginVertical: 12,
+                      flexDirection: "row",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Feather
+                      name={getIcon(item.category)}
+                      size={32}
+                      color={Colors.white}
+                      style={styles.cardIcon}
+                    />
+                  </View>
+                  <Text style={styles.cardName}>{item.title}</Text>
+                  <Text style={[styles.status, getStatusStyle(item.status)]}>
+                    {item.status}
+                  </Text>
+                </View>
+              ))}
+            </ScrollView>
+          )}
+        </View>
 
+        {/* Pending Tasks */}
+        <View style={styles.recentTasksContainer}>
+          <Text style={styles.sectionTitle}>Pending Tasks</Text>
+        </View>
         {loading ? (
           <Text>Loading...</Text>
-        ) : tasks.length === 0 ? (
-          <Text style={{ color: "#666" }}>You have no task yet</Text>
+        ) : tasks.filter((t) => t.status === "pending").length === 0 ? (
+          <Text style={{ color: "#666" }}>No pending tasks</Text>
         ) : (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.contentContainer}
-          >
-            {tasks.slice(0, 4).map((item) => (
-              <View key={item.id} style={styles.card}>
-                <Text style={{ color: "white", textAlign: "right" }}>
-                  {formatMonthYear(new Date(item.completionDate))}
-                </Text>
-                <View
-                  style={{
-                    marginVertical: 12,
-                    flexDirection: "row",
-                    justifyContent: "center",
-                  }}
+          <View style={styles.taskContainer}>
+            {tasks
+              .filter((t) => t.status === "pending")
+              .map((item) => (
+                <TouchableOpacity
+                  style={styles.cardP}
+                  key={item.id}
+                  onPress={() => navigation.navigate("Tasks")}
                 >
                   <Feather
                     name={getIcon(item.category)}
-                    size={32}
-                    color={Colors.white}
+                    size={28}
+                    color={Colors.primary}
                     style={styles.cardIcon}
                   />
-                </View>
-
-                <Text style={styles.cardName}>{item.title}</Text>
-                <Text style={[styles.status, getStatusStyle(item.status)]}>
-                  {item.status}
-                </Text>
-              </View>
-            ))}
-          </ScrollView>
+                  <View>
+                    <Text style={taskListStyles.title}>{item.title}</Text>
+                    <Text style={taskListStyles.meta}>
+                      Due: {new Date(item.completionDate).toDateString()}
+                    </Text>
+                    <Text style={taskListStyles.meta}>
+                      Status: {item.status}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+          </View>
         )}
-      </View>
-
-      {/* Pending Tasks */}
-      <View style={styles.recentTasksContainer}>
-        <Text style={styles.sectionTitle}>Pending Tasks</Text>
-      </View>
-      {loading ? (
-        <Text>Loading...</Text>
-      ) : tasks.filter((t) => t.status === "pending").length === 0 ? (
-        <Text style={{ color: "#666" }}>No pending tasks</Text>
-      ) : (
-        <ScrollView contentContainerStyle={styles.taskContainer}>
-          {tasks
-            .filter((t) => t.status === "pending")
-            .map((item) => (
-              <TouchableOpacity
-                style={styles.cardP}
-                key={item.id}
-                onPress={() => navigation.navigate("Tasks")}
-              >
-                <Feather
-                  name={getIcon(item.category)}
-                  size={28}
-                  color={Colors.primary}
-                  style={styles.cardIcon}
-                />
-
-                <View>
-                  <Text style={taskListStyles.title}>{item.title}</Text>
-                  <Text style={taskListStyles.meta}>
-                    Due: {new Date(item.completionDate).toDateString()}
-                  </Text>
-                  <Text style={taskListStyles.meta}>Status: {item.status}</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-        </ScrollView>
-      )}
+      </ScrollView>
     </SafeAreaView>
   );
 };

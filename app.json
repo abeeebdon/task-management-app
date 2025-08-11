@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "task-management",
+    "name": "Task Management Application",
     "slug": "task-management",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,7 +9,7 @@
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/task-management-icon.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
     "ios": {
