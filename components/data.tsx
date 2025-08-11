@@ -4,4 +4,5 @@ export const categories = [
   "Shopping",
   "Learning",
   "Health",
+  "Finance",
 ];

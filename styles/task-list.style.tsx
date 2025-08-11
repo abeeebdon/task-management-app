@@ -3,6 +3,7 @@ import { Colors } from "../components/constants";
 
 export const taskListStyles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 16,
     backgroundColor: Colors.background,
   },
@@ -11,13 +12,15 @@ export const taskListStyles = StyleSheet.create({
     gap: 16,
     alignItems: "center",
     marginBottom: 16,
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: "#ccc",
+    padding: 12,
+    paddingVertical: 4,
   },
   searchInput: {
-    borderWidth: 1,
     flex: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 12,
+    color: Colors.textDark,
   },
   featherIcon: {
     padding: 12,
@@ -43,6 +46,7 @@ export const taskListStyles = StyleSheet.create({
     fontSize: 14,
     marginTop: 4,
     textTransform: "capitalize",
+    color: "#645b5bff",
   },
   priority: {
     fontWeight: "600",

@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   View,
@@ -15,6 +15,10 @@ import { RootNavigationTypes } from "../types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import { deleteFunc } from "../components/func";
+import { Colors } from "../components/constants";
+import EditTaskModal from "../components/EditModal";
+import ConfirmDeleteModal from "../components/DeleteModal";
+import { taskDetailsStyles as styles } from "../styles/task.details.style";
 
 // Correctly type the route
 type TaskDetailsRouteProp = RouteProp<RootNavigationTypes, "taskDetails">;
@@ -26,14 +30,11 @@ type NavigationProp = NativeStackNavigationProp<
 >;
 const getStatusStyle = (status: string) => {
   switch (status.toLowerCase()) {
-    case "in progress":
-      return { backgroundColor: "orange" };
     case "pending":
-      return { backgroundColor: "goldenrod" };
+      return { backgroundColor: Colors.primary };
     case "completed":
       return { backgroundColor: "green" };
-    case "archived":
-      return { backgroundColor: "gray" };
+
     default:
       return { backgroundColor: "#666" };
   }
@@ -42,10 +43,21 @@ const TaskDetailsScreen: FC = () => {
   const route = useRoute<TaskDetailsRouteProp>();
   const navigation = useNavigation<NavigationProp>();
 
-  const { title, completionDate, description, status, category, priority, id } =
+  const [editVisible, setEditVisible] = useState(false);
+  const [deleteVisible, setDeleteVisible] = useState(false);
+  const { title, completionDate, description, status, category, id } =
     route.params.task;
 
-  const handleEdit = () => {};
+  const handleSaveEdit = async (updatedTask: any) => {
+    const stored = await AsyncStorage.getItem(TASKS_KEY);
+    const parsed = stored ? JSON.parse(stored) : [];
+    const updatedList = parsed.map((t: any) =>
+      t.id === updatedTask.id ? updatedTask : t
+    );
+    await AsyncStorage.setItem(TASKS_KEY, JSON.stringify(updatedList));
+    navigation.navigate("taskList");
+    // loadTaskFromStorage(); // optional refresh method
+  };
   const TASKS_KEY = "TASKS_LIST";
 
   const handleDelete = async () => {
@@ -90,83 +102,36 @@ const TaskDetailsScreen: FC = () => {
           <Text style={styles.value}>{category}</Text>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.label}>Priority:</Text>
-          <Text style={styles.value}>{priority}</Text>
-        </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("taskEdit", { id: id })}
+            onPress={() => setEditVisible(true)}
             style={[styles.actionBtn, { backgroundColor: "green" }]}
           >
             <Text style={styles.btnText}>Edit</Text>
           </TouchableOpacity>
+
           <TouchableOpacity
-            onPress={handleDelete}
+            onPress={() => setDeleteVisible(true)}
             style={[styles.actionBtn, { backgroundColor: "darkred" }]}
           >
             <Text style={styles.btnText}>Delete</Text>
           </TouchableOpacity>
         </View>
+        <EditTaskModal
+          visible={editVisible}
+          onClose={() => setEditVisible(false)}
+          task={route.params.task}
+          onSave={handleSaveEdit}
+        />
+
+        <ConfirmDeleteModal
+          visible={deleteVisible}
+          onCancel={() => setDeleteVisible(false)}
+          onConfirm={handleDelete}
+        />
       </ScrollView>
     </SafeAreaView>
   );
 };
 
 export default TaskDetailsScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f9f9f9",
-  },
-  content: {
-    // padding: 16,
-  },
-  titleContainer: {
-    backgroundColor: "blue",
-    padding: 16,
-    // height: 100,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
-    marginBottom: 16,
-    gap: 24,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "white",
-  },
-  section: {
-    marginBottom: 12,
-    padding: 10,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#555",
-  },
-  value: {
-    fontSize: 16,
-    color: "#222",
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    padding: 16,
-  },
-  actionBtn: {
-    backgroundColor: "#dad1d1ff",
-    elevation: 2,
-    width: "40%",
-    padding: 12,
-    borderRadius: 8,
-    marginHorizontal: 8,
-  },
-  btnText: {
-    fontSize: 16,
-    textAlign: "center",
-    color: "white",
-  },
-});

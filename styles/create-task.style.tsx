@@ -25,7 +25,7 @@ export const createTaskStyles = StyleSheet.create({
   label: {
     fontWeight: "600",
     fontSize: 16,
-    marginTop: 12,
+    marginTop: 16,
   },
   input: {
     borderWidth: 1,

@@ -39,7 +39,7 @@ const CreateTaskScreen: FC = () => {
   const [description, setDescription] = useState("");
   const [completionDate, setCompletionDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState("Personal");
 
   const handleDateChange = (_: any, selectedDate?: Date) => {
     setShowDatePicker(false);
@@ -107,7 +107,7 @@ const CreateTaskScreen: FC = () => {
                 <Text style={styles.label}>Description</Text>
                 <TextInput
                   style={[styles.input, styles.textArea]}
-                  placeholder="Description"
+                  placeholder="Write your task description here"
                   value={description}
                   onChangeText={setDescription}
                   multiline
@@ -120,11 +120,17 @@ const CreateTaskScreen: FC = () => {
                     <Pressable
                       key={level}
                       onPress={() => setCategory(level)}
-                      style={[styles.categoriesBtn]}
+                      style={[
+                        styles.categoriesBtn,
+                        {
+                          backgroundColor:
+                            category === level ? Colors.primary : "#ccc",
+                        },
+                      ]}
                     >
                       <Text
                         style={{
-                          color: category === level ? "#007BFF" : "white",
+                          color: category === level ? "white" : "#817a92ff",
                         }}
                       >
                         {level}

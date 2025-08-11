@@ -8,6 +8,7 @@ import {
   TextInput,
   Pressable,
   Alert,
+  ScrollView,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
@@ -18,6 +19,7 @@ import FeatherIcons from "react-native-vector-icons/Feather";
 import { taskListStyles as styles } from "../styles/task-list.style";
 import { deleteFunc } from "../components/func";
 import { Colors } from "../components/constants";
+import TaskItem from "../components/TaskItem";
 
 const TASKS_KEY = "TASKS_LIST";
 
@@ -27,6 +29,8 @@ type NavigationProp = NativeStackNavigationProp<
 >;
 
 const taskStatus = ["All", "Pending", "Completed"];
+
+// ✅ Separated item component so hooks are safe here
 
 const TaskListScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
@@ -56,7 +60,6 @@ const TaskListScreen: React.FC = () => {
     loadTasks();
   }, [isFocused]);
 
-  // ✅ Memoized filtered & searched tasks
   const filteredTasks = useMemo(() => {
     return tasks
       .filter((task) => {
@@ -74,103 +77,98 @@ const TaskListScreen: React.FC = () => {
       });
   }, [tasks, filterBy, searchQuery]);
 
-  const renderItem = ({ item }: { item: Task }) => {
-    const handleDelete = async () => {
-      const status = await deleteFunc(item.id);
-      if (status === "deleted") {
-        Alert.alert("Success", "Task deleted successfully.");
-        loadTasks();
-      }
-    };
+  const handleDelete = async (id: string) => {
+    const status = await deleteFunc(id);
+    if (status === "deleted") {
+      Alert.alert("Success", "Task deleted successfully.");
+      loadTasks();
+    }
+  };
 
-    return (
-      <TouchableOpacity
-        style={styles.taskCard}
-        onPress={() => navigation.navigate("taskDetails", { task: item })}
-      >
-        <View>
-          <Text style={styles.title}>{item.title}</Text>
-          <Text style={styles.meta}>
-            Due: {new Date(item.completionDate).toDateString()}
-          </Text>
-          <Text style={styles.meta}>Status: {item.status}</Text>
-        </View>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("taskEdit", { id: item.id })}
-          >
-            <Text style={{ color: "green" }}>Edit</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleDelete}>
-            <Text style={{ color: "red" }}>Delete</Text>
-          </TouchableOpacity>
-        </View>
-      </TouchableOpacity>
+  const handleSaveEdit = async (updatedTask: Task) => {
+    const stored = await AsyncStorage.getItem(TASKS_KEY);
+    const parsed = stored ? JSON.parse(stored) : [];
+    const updatedList = parsed.map((t: Task) =>
+      t.id === updatedTask.id ? updatedTask : t
     );
+    await AsyncStorage.setItem(TASKS_KEY, JSON.stringify(updatedList));
+    loadTasks();
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 16 }}>
-          Task List
+    <SafeAreaView style={styles.container}>
+      <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 16 }}>
+        My Tasks
+      </Text>
+      <Pressable
+        style={styles.addButton}
+        onPress={() => navigation.navigate("Create")}
+      >
+        <Text style={{ color: "white", textAlign: "center" }}>
+          Add New Task
         </Text>
-        <Pressable
-          style={styles.addButton}
-          onPress={() => navigation.navigate("Create")}
-        >
-          <Text style={{ color: "white", textAlign: "center" }}>
-            Add New Task
-          </Text>
-        </Pressable>
-        {/* ✅ Search Box */}
-        <View style={styles.searchContainer}>
-          <TextInput
-            placeholder="Search tasks..."
-            style={styles.searchInput}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-          <TouchableOpacity style={styles.featherIcon}>
-            <FeatherIcons name="search" size={24} color="#ccc" />
-          </TouchableOpacity>
-        </View>
+      </Pressable>
 
-        {/* ✅ Filter Buttons */}
-        <View style={styles.filterContainer}>
-          {taskStatus.map((status, i) => (
-            <Pressable
-              key={i}
-              style={[
-                styles.filterButton,
-                {
-                  backgroundColor:
-                    filterBy === status.toLowerCase() ? Colors.primary : "#ccc",
-                },
-              ]}
-              onPress={() => setFilterBy(status.toLowerCase())}
-            >
-              <Text
-                style={{
-                  color: filterBy === status.toLowerCase() ? "white" : "black",
-                }}
-              >
-                {status}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-        {/* ✅ Filtered + Searched Task List */}
-        <FlatList
-          data={filteredTasks}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          ListEmptyComponent={<Text style={styles.empty}>No tasks found.</Text>}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
+      {/* Search */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          placeholder="Search tasks..."
+          style={styles.searchInput}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
         />
+        <TouchableOpacity>
+          <FeatherIcons name="search" size={24} color="#ccc" />
+        </TouchableOpacity>
       </View>
+
+      {/* Filters */}
+      <View style={styles.filterContainer}>
+        {taskStatus.map((status, i) => (
+          <Pressable
+            key={i}
+            style={[
+              styles.filterButton,
+              {
+                backgroundColor:
+                  filterBy === status.toLowerCase() ? Colors.primary : "#ccc",
+              },
+            ]}
+            onPress={() => setFilterBy(status.toLowerCase())}
+          >
+            <Text
+              style={{
+                color:
+                  filterBy === status.toLowerCase() ? "white" : "#88878780",
+              }}
+            >
+              {status}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
+
+      {/* Task List */}
+      <ScrollView
+        style={{ flex: 1 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {filteredTasks.length > 0 ? (
+          filteredTasks.map((item, index) => (
+            <View key={item.id}>
+              <TaskItem
+                item={item}
+                onSave={handleSaveEdit}
+                onDelete={handleDelete}
+              />
+            </View>
+          ))
+        ) : (
+          <Text style={styles.empty}>No tasks found.</Text>
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 };
