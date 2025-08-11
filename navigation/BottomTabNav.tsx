@@ -14,6 +14,9 @@ const BottomNNavigation = () => {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: "blue",
+        tabBarInactiveBackgroundColor: "whitegit",
+        tabBarActiveBackgroundColor: "lightgray",
+        tabBarInactiveTintColor: "lightgray",
         tabBarStyle: {
           display: "flex",
           justifyContent: "center",
