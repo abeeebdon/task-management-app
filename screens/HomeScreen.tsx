@@ -72,7 +72,7 @@ const HomeScreen = () => {
       loadTasks();
     }, [])
   );
-
+  console.log(tasks);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f2f2f2" }}>
       <ScrollView
@@ -145,7 +145,8 @@ const HomeScreen = () => {
         </View>
         {loading ? (
           <Text>Loading...</Text>
-        ) : tasks.filter((t) => t.status === "pending").length === 0 ? (
+        ) : tasks.filter((t) => t.status.toLowerCase() === "pending").length ===
+          0 ? (
           <Text style={{ color: "#666", margin: 10 }}>No pending tasks</Text>
         ) : (
           <View style={styles.taskContainer}>

@@ -114,8 +114,8 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
               selectedValue={form.status}
               onValueChange={(value) => handleChange("status", value)}
             >
-              <Picker.Item label="Pending" value="Pending" />
-              <Picker.Item label="Completed" value="Completed" />
+              <Picker.Item label="Pending" value="pending" />
+              <Picker.Item label="Completed" value="completed" />
             </Picker>
           </View>
 
