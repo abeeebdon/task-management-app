@@ -50,7 +50,6 @@ export const createTaskStyles = StyleSheet.create({
   },
   categoriesContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
     marginTop: 6,
     gap: 6,
     flexWrap: "wrap",

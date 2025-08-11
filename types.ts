@@ -16,5 +16,4 @@ export type Task = {
   completionDate: string;
   status: string;
   category: string;
-  priority: "Low" | "Medium" | "High";
 };

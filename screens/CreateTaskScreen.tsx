@@ -19,19 +19,11 @@ import { createTaskStyles as styles } from "../styles/create-task.style";
 import { categories } from "../components/data";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootNavigationTypes } from "../types";
+import { RootNavigationTypes, Task } from "../types";
 import { Colors } from "../components/constants";
 
 const TASKS_KEY = "TASKS_LIST";
 
-type Task = {
-  id: string;
-  title: string;
-  description: string;
-  completionDate: string;
-  status: string;
-  category: string;
-};
 const CreateTaskScreen: FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootNavigationTypes>>();

@@ -6,6 +6,7 @@ import TaskNavigation from "./TaskNavigation";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Feather from "react-native-vector-icons/Feather";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { Colors } from "../components/constants";
 
 const Tab = createBottomTabNavigator();
 const BottomNNavigation = () => {
@@ -13,9 +14,9 @@ const BottomNNavigation = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "blue",
-        tabBarInactiveBackgroundColor: "whitegit",
-        tabBarActiveBackgroundColor: "lightgray",
+        tabBarActiveTintColor: "white",
+        tabBarInactiveBackgroundColor: "white",
+        tabBarActiveBackgroundColor: Colors.primary,
         tabBarInactiveTintColor: "lightgray",
         tabBarStyle: {
           display: "flex",

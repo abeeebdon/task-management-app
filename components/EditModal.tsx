@@ -5,11 +5,10 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   Pressable,
   Platform,
 } from "react-native";
-import { Colors } from "./constants";
+import { editModalstyles as styles } from "../styles/editmodal.style";
 import Entypo from "react-native-vector-icons/Entypo";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Task } from "../types";
@@ -54,33 +53,48 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
         <View style={styles.modalContainer}>
           <Text style={styles.title}>Edit Task</Text>
 
+          {/* Title */}
+          <Text style={styles.label}>Title</Text>
           <TextInput
             style={styles.input}
-            placeholder="Title"
+            placeholder="Enter task title"
             value={form.title}
             onChangeText={(text) => handleChange("title", text)}
           />
+
+          {/* Description */}
+          <Text style={styles.label}>Description</Text>
           <TextInput
             style={styles.input}
-            placeholder="Description"
+            placeholder="Enter task description"
             value={form.description}
             onChangeText={(text) => handleChange("description", text)}
           />
+
+          {/* Category */}
+          <Text style={styles.label}>Category</Text>
           <View style={styles.pickerWrapper}>
             <Picker
               selectedValue={form.category}
               onValueChange={(value) => handleChange("category", value)}
             >
               {categories.map((cat, i) => (
-                <Picker.Item key={i} label={cat} value={cat} />
+                <Picker.Item key={i} label={cat} value={cat} color="#222" />
               ))}
             </Picker>
           </View>
+
+          {/* Completion Date */}
+          <Text style={styles.label}>Completion Date</Text>
           <Pressable
             style={styles.datePicker}
             onPress={() => setShowDatePicker(true)}
           >
-            <Text style={styles.dateText}>{form.completionDate}</Text>
+            <Text style={styles.dateText}>
+              {form.completionDate
+                ? new Date(form.completionDate).toLocaleDateString()
+                : "Select a date"}
+            </Text>
             <Entypo name="chevron-small-down" color="white" size={20} />
           </Pressable>
 
@@ -93,6 +107,8 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
             />
           )}
 
+          {/* Status */}
+          <Text style={styles.label}>Status</Text>
           <View style={styles.pickerWrapper}>
             <Picker
               selectedValue={form.status}
@@ -102,6 +118,8 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
               <Picker.Item label="Completed" value="Completed" />
             </Picker>
           </View>
+
+          {/* Buttons */}
           <View style={styles.buttonRow}>
             <TouchableOpacity
               style={[styles.button, { backgroundColor: "green" }]}
@@ -123,71 +141,3 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({
 };
 
 export default EditTaskModal;
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.4)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContainer: {
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    width: "90%",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 12,
-    color: Colors.primary,
-    textAlign: "center",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 6,
-    padding: 10,
-    marginBottom: 10,
-    fontSize: 16,
-  },
-  pickerWrapper: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 6,
-    marginBottom: 10,
-  },
-
-  buttonRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 10,
-  },
-  button: {
-    padding: 10,
-    borderRadius: 8,
-    width: "48%",
-  },
-  btnText: {
-    color: "#fff",
-    fontSize: 16,
-    textAlign: "center",
-  },
-  datePicker: {
-    backgroundColor: Colors.primary,
-    padding: 10,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-    marginTop: 6,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 10,
-  },
-  dateText: {
-    color: "white",
-    textAlign: "center",
-    fontSize: 16,
-  },
-});
