@@ -116,13 +116,13 @@ const CreateTaskScreen: FC = () => {
                         styles.categoriesBtn,
                         {
                           backgroundColor:
-                            category === level ? Colors.primary : "#ccc",
+                            category === level ? Colors.primary : "#e2e2e2ff",
                         },
                       ]}
                     >
                       <Text
                         style={{
-                          color: category === level ? "white" : "#817a92ff",
+                          color: category === level ? "white" : "#817a92",
                         }}
                       >
                         {level}

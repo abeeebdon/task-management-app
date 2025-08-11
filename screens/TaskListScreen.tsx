@@ -131,15 +131,16 @@ const TaskListScreen: React.FC = () => {
               styles.filterButton,
               {
                 backgroundColor:
-                  filterBy === status.toLowerCase() ? Colors.primary : "#ccc",
+                  filterBy === status.toLowerCase()
+                    ? Colors.primary
+                    : "rgba(252, 245, 245, 1)",
               },
             ]}
             onPress={() => setFilterBy(status.toLowerCase())}
           >
             <Text
               style={{
-                color:
-                  filterBy === status.toLowerCase() ? "white" : "#88878780",
+                color: filterBy === status.toLowerCase() ? "white" : "#888787",
               }}
             >
               {status}

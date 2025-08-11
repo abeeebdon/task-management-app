@@ -146,7 +146,7 @@ const HomeScreen = () => {
         {loading ? (
           <Text>Loading...</Text>
         ) : tasks.filter((t) => t.status === "pending").length === 0 ? (
-          <Text style={{ color: "#666" }}>No pending tasks</Text>
+          <Text style={{ color: "#666", margin: 10 }}>No pending tasks</Text>
         ) : (
           <View style={styles.taskContainer}>
             {tasks
